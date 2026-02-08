@@ -16,7 +16,6 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
-import { apiRequest } from "@/lib/queryClient";
 import {
   Mail,
   Phone,
@@ -28,6 +27,9 @@ import {
 } from "lucide-react";
 import { insertContactSchema } from "@shared/schema";
 import type { InsertContact } from "@shared/schema";
+
+const WEB3FORMS_ACCESS_KEY =
+  import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || "c27a8c59-aaab-40e9-b428-bd53f651eb4a";
 
 const contactInfo = [
   { icon: Mail, label: "Email", value: "70ayush@gmail.com", href: "mailto:70ayush@gmail.com" },
@@ -59,8 +61,27 @@ export default function Contact() {
 
   const mutation = useMutation({
     mutationFn: async (data: InsertContact) => {
-      const res = await apiRequest("POST", "/api/contact", data);
-      return res.json();
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({
+          access_key: WEB3FORMS_ACCESS_KEY,
+          subject: data.subject || "Website Contact Inquiry",
+          from_name: data.name,
+          name: data.name,
+          email: data.email,
+          company: data.company || "N/A",
+          message: data.message,
+          botcheck: "",
+        }),
+      });
+
+      const body = await res.json();
+      if (!res.ok || body?.success !== true) {
+        throw new Error(body?.message || "Web3Forms submission failed");
+      }
+
+      return body;
     },
     onSuccess: () => {
       toast({

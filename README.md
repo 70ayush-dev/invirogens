@@ -71,6 +71,7 @@ Defined in `.env.example`:
 Optional:
 
 - `WEB3FORMS_ACCESS_KEY` - enables Web3Forms relay when SMTP is not configured
+- `VITE_WEB3FORMS_ACCESS_KEY` - Web3Forms key used by the frontend contact form
 - `PORT` - server port (default `5000`)
 - `NODE_ENV` - `development` or `production`
 
