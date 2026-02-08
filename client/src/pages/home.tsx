@@ -121,7 +121,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen">
-      <section className="relative z-40 h-[70vh] min-h-[460px] overflow-hidden" data-testid="section-hero">
+      <section className="relative z-40 h-[68vh] min-h-[440px] overflow-hidden" data-testid="section-hero">
         {heroSlides.map((slide, index) => (
           <div
             key={index}
@@ -139,7 +139,7 @@ export default function Home() {
         ))}
 
         <div className="relative z-10 h-full flex items-center">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+          <div className="section-wrap w-full">
             <div className="max-w-2xl">
               <Badge variant="secondary" className="mb-4 bg-primary/20 text-primary-foreground border-0">
                 <FlaskConical className="w-3 h-3 mr-1.5" />
@@ -157,12 +157,12 @@ export default function Home() {
                   {index === currentSlide && (
                     <>
                       <h1
-                        className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-4"
+                        className="text-[clamp(1.9rem,5vw,3.85rem)] font-bold tracking-tight text-white leading-[1.12] mb-3 sm:mb-4"
                         data-testid="text-hero-title"
                       >
                         {slide.title}
                       </h1>
-                      <p className="text-lg sm:text-xl text-white/80 mb-8 leading-relaxed max-w-xl">
+                      <p className="text-base sm:text-lg text-white/85 mb-6 sm:mb-8 max-w-xl">
                         {slide.subtitle}
                       </p>
                       <div className="flex flex-wrap items-center gap-3">
@@ -236,20 +236,46 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="relative z-30 py-8" data-testid="section-stats">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+      <section
+        className="relative z-30 py-14 lg:py-20 overflow-hidden"
+        data-testid="section-stats"
+      >
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,hsl(var(--primary)/0.14),transparent_55%),radial-gradient(circle_at_bottom_right,hsl(var(--accent)/0.10),transparent_50%)]" />
+        <div className="relative section-wrap">
+          <div className="text-center mb-6 lg:mb-8">
+            <p className="text-xs sm:text-sm uppercase tracking-[0.22em] text-primary/90 font-semibold">
+              Global Reach
+            </p>
+            <h2 className="mt-2 text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+              Trusted Molecular Biology Partner
+            </h2>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5">
             {stats.map((stat) => (
-              <Card key={stat.label}>
-                <CardContent className="p-4 sm:p-6 flex items-center gap-3 sm:gap-4">
-                  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
-                    <stat.icon className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+              <Card
+                key={stat.label}
+                className="group relative formal-card border-primary/20 bg-background/85 backdrop-blur-sm"
+              >
+                <CardContent className="p-5 sm:p-6">
+                  <div className="flex items-center gap-4">
+                    <div className="w-11 h-11 sm:w-12 sm:h-12 rounded-lg bg-primary/10 group-hover:bg-primary/15 flex items-center justify-center shrink-0 transition-colors">
+                      <stat.icon className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
+                    </div>
+                    <div className="min-w-0">
+                      <p
+                        className="text-2xl sm:text-3xl font-bold text-foreground leading-none"
+                        data-testid={`text-stat-${stat.label.toLowerCase().replace(/\s/g, "-")}`}
+                      >
+                        {stat.value}
+                      </p>
+                      <p className="mt-1 text-xs sm:text-sm text-muted-foreground">
+                        {stat.label}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="text-xl sm:text-2xl font-bold text-foreground" data-testid={`text-stat-${stat.label.toLowerCase().replace(/\s/g, "-")}`}>
-                      {stat.value}
-                    </p>
-                    <p className="text-xs sm:text-sm text-muted-foreground">{stat.label}</p>
+                  <div className="mt-4 h-1.5 rounded-full bg-muted overflow-hidden">
+                    <div className="h-full w-3/4 rounded-full bg-gradient-to-r from-primary/70 to-primary" />
                   </div>
                 </CardContent>
               </Card>
@@ -258,17 +284,17 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-16 lg:py-24" data-testid="section-products">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-14 lg:py-20" data-testid="section-products">
+        <div className="section-wrap">
           <div className="text-center mb-12">
             <Badge variant="secondary" className="mb-3">
               <FlaskConical className="w-3 h-3 mr-1.5" />
               Our Products
             </Badge>
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground mb-4">
               Molecular Biology Products
             </h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto text-lg">
+            <p className="text-muted-foreground max-w-xl mx-auto text-base sm:text-lg">
               High-quality DNA/RNA extraction kits and laboratory reagents at competitive prices for research and clinical applications.
             </p>
           </div>
@@ -293,7 +319,7 @@ export default function Home() {
                 const IconComp = categoryIcons[product.category] || FlaskConical;
                 return (
                   <Link key={product.id} href={`/products/${product.slug}`}>
-                    <Card className="group overflow-visible h-full hover-elevate cursor-pointer" data-testid={`card-product-${product.id}`}>
+                    <Card className="group overflow-visible h-full formal-card cursor-pointer" data-testid={`card-product-${product.id}`}>
                       <CardContent className="p-0">
                         <div className="relative overflow-hidden rounded-t-md">
                           <img
@@ -342,8 +368,8 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-16 lg:py-24 bg-card" data-testid="section-about-teaser">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-14 lg:py-20 bg-card" data-testid="section-about-teaser">
+        <div className="section-wrap">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
             <div className="relative">
               <div className="rounded-md overflow-hidden">
@@ -359,13 +385,13 @@ export default function Home() {
               <Badge variant="secondary" className="mb-3">
                 About INVIROGENS
               </Badge>
-            <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-6">
+            <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground mb-6">
                 About INVIROGENS
               </h2>
-              <p className="text-muted-foreground leading-relaxed mb-4">
+              <p className="text-muted-foreground mb-4 max-w-prose">
                 INVIROGENS Biotech products are equipped with automated systems for production of high-quality molecular biology products and clinical chemistry reagents.
               </p>
-              <p className="text-muted-foreground leading-relaxed mb-8">
+              <p className="text-muted-foreground mb-8 max-w-prose">
                 INVIROGENS Biotech will establish distributors in Japan, Korea, India, Europe, Pakistan, China and USA, and covers 30+ countries with dedicated distributors.
               </p>
               <div className="flex flex-wrap items-center gap-3">
@@ -386,14 +412,14 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-16 lg:py-24" data-testid="section-news">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="py-14 lg:py-20" data-testid="section-news">
+        <div className="section-wrap">
           <div className="flex flex-wrap items-end justify-between gap-4 mb-12">
             <div>
               <Badge variant="secondary" className="mb-3">
                 Latest Updates
               </Badge>
-              <h2 className="text-3xl sm:text-4xl font-bold text-foreground">
+              <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-foreground">
                 News
               </h2>
             </div>
@@ -424,7 +450,7 @@ export default function Home() {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
               {latestNews.map((article) => (
                 <Link key={article.id} href={`/news/${article.slug}`}>
-                  <Card className="group overflow-visible h-full hover-elevate cursor-pointer" data-testid={`card-news-${article.id}`}>
+                  <Card className="group overflow-visible h-full formal-card cursor-pointer" data-testid={`card-news-${article.id}`}>
                     <CardContent className="p-0">
                       <div className="relative overflow-hidden rounded-t-md">
                         <img
@@ -459,16 +485,16 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="py-16 lg:py-24 bg-primary relative overflow-hidden" data-testid="section-cta">
+      <section className="py-14 lg:py-20 bg-primary relative overflow-hidden" data-testid="section-cta">
         <div className="absolute inset-0 opacity-10">
           <div className="absolute top-10 left-10 w-72 h-72 rounded-full bg-white blur-3xl" />
           <div className="absolute bottom-10 right-10 w-96 h-96 rounded-full bg-white blur-3xl" />
         </div>
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-          <h2 className="text-3xl sm:text-4xl font-bold text-primary-foreground mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold tracking-tight text-primary-foreground mb-4">
             Contact & Distributors
           </h2>
-          <p className="text-primary-foreground/80 text-lg mb-8 max-w-2xl mx-auto">
+          <p className="text-primary-foreground/85 text-base sm:text-lg mb-8 max-w-xl mx-auto">
             If you have interested in our products or any suggestion, please contact us.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">

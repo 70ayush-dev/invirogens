@@ -30,6 +30,7 @@ const navLinks = [
 export function Navbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [productDropdownOpen, setProductDropdownOpen] = useState(false);
+  const [mobileProductOpen, setMobileProductOpen] = useState(false);
   const [searchFocused, setSearchFocused] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [scrolled, setScrolled] = useState(false);
@@ -65,6 +66,7 @@ export function Navbar() {
   useEffect(() => {
     setMobileOpen(false);
     setProductDropdownOpen(false);
+    setMobileProductOpen(false);
     setSearchFocused(false);
   }, [location]);
 
@@ -250,7 +252,14 @@ export function Navbar() {
               size="icon"
               variant="ghost"
               className={`lg:hidden ${isTransparent ? "text-white hover:text-white" : ""}`}
-              onClick={() => setMobileOpen(!mobileOpen)}
+              onClick={() => {
+                setMobileOpen((prev) => {
+                  if (prev) {
+                    setMobileProductOpen(false);
+                  }
+                  return !prev;
+                });
+              }}
               data-testid="button-mobile-menu"
             >
               {mobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -260,12 +269,14 @@ export function Navbar() {
       </div>
 
       <div
-        className={`lg:hidden transition-all duration-300 overflow-hidden border-t bg-background/95 backdrop-blur-md ${
-          mobileOpen ? "max-h-[32rem] opacity-100" : "max-h-0 opacity-0 border-t-0"
+        className={`lg:hidden transition-all duration-300 border-t bg-background/95 backdrop-blur-md ${
+          mobileOpen
+            ? "max-h-[calc(100vh-4rem)] opacity-100 overflow-y-auto overscroll-contain"
+            : "max-h-0 opacity-0 border-t-0 overflow-hidden"
         }`}
         data-testid="nav-mobile"
       >
-        <div className="px-4 py-3 space-y-1">
+        <div className="px-4 py-3 pb-6 space-y-1">
           {navLinks.map((link) =>
             link.hasDropdown ? (
               <div key={link.name}>
@@ -275,19 +286,19 @@ export function Navbar() {
                       ? "text-primary"
                       : "text-muted-foreground"
                   }`}
-                  onClick={() => setProductDropdownOpen(!productDropdownOpen)}
+                  onClick={() => setMobileProductOpen((prev) => !prev)}
                   data-testid="button-mobile-products"
                 >
                   {link.name}
                   <ChevronDown
                     className={`w-4 h-4 transition-transform ${
-                      productDropdownOpen ? "rotate-180" : ""
+                      mobileProductOpen ? "rotate-180" : ""
                     }`}
                   />
                 </button>
                 <div
                   className={`ml-3 space-y-0.5 overflow-hidden transition-all duration-200 ${
-                    productDropdownOpen ? "max-h-96 opacity-100 mt-1" : "max-h-0 opacity-0"
+                    mobileProductOpen ? "max-h-96 opacity-100 mt-1" : "max-h-0 opacity-0"
                   }`}
                 >
                   <Link
