@@ -95,7 +95,7 @@ export async function sendContactInquiry(payload: InsertContact): Promise<void> 
     }
 
     const body = await response.text().catch(() => "");
-    throw new Error(`Web3Forms relay failed: ${response.status} ${body}`);
+    console.warn(`Web3Forms relay failed: ${response.status} ${body}`);
   }
 
   // SMTP-free fallback using FormSubmit relay.
