@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { Switch, Route } from "wouter";
+import { useLocation } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
@@ -32,6 +34,47 @@ function Router() {
   );
 }
 
+function ScrollRevealManager() {
+  const [location] = useLocation();
+
+  useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      return;
+    }
+
+    const targets = Array.from(
+      document.querySelectorAll<HTMLElement>(
+        '[data-testid^="section-"], .formal-card, [data-animate="reveal"]'
+      )
+    );
+
+    targets.forEach((el, index) => {
+      el.classList.add("reveal-on-scroll");
+      el.style.setProperty("--reveal-delay", `${Math.min((index % 6) * 45, 225)}ms`);
+    });
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        });
+      },
+      {
+        threshold: 0.15,
+        rootMargin: "0px 0px -10% 0px",
+      }
+    );
+
+    targets.forEach((el) => observer.observe(el));
+
+    return () => observer.disconnect();
+  }, [location]);
+
+  return null;
+}
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
@@ -40,6 +83,7 @@ function App() {
           <div className="min-h-screen flex flex-col">
             <Navbar />
             <main className="flex-1">
+              <ScrollRevealManager />
               <Router />
             </main>
             <Footer />

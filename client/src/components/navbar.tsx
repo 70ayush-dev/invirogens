@@ -70,7 +70,7 @@ export function Navbar() {
     setSearchFocused(false);
   }, [location]);
 
-  const heroPages = ["/", "/about"];
+  const heroPages = ["/"];
   const isHeroPage = heroPages.includes(location);
   const isTransparent = !scrolled && isHeroPage;
 

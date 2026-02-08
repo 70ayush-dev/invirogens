@@ -95,7 +95,95 @@ function renderMarkdownTable(text: string) {
   );
 }
 
-function TabContent({ content }: { content: string | null | undefined }) {
+function renderSimpleComponentsTable(text: string) {
+  const rawLines = text
+    .split("\n")
+    .map((line) => line.trim())
+    .filter(Boolean);
+
+  if (rawLines.length < 2) return null;
+
+  // Merge parenthetical continuation lines into previous value rows.
+  const lines: string[] = [];
+  for (const line of rawLines) {
+    if (line.startsWith("(") && lines.length > 0) {
+      lines[lines.length - 1] = `${lines[lines.length - 1]} ${line}`;
+      continue;
+    }
+    lines.push(line);
+  }
+
+  const rows: Array<{ item: string; value: string }> = [];
+  const codeLike = (s: string) => /^[A-Z]{2,}[A-Z0-9\- ]*\d+$/i.test(s);
+  const headingLike = (s: string) =>
+    /^(components?|applications?|specification|specifications|storage|package|size)$/i.test(s);
+
+  for (let i = 0; i < lines.length; ) {
+    const current = lines[i];
+    const next = lines[i + 1];
+
+    // Case A: catalog number followed by heading-style rows (e.g., APDIY100 + Components/Applications...)
+    if (codeLike(current) && next && headingLike(next)) {
+      rows.push({ item: "Catalog No.", value: current });
+      i += 1;
+      continue;
+    }
+
+    // Case B: SKU-code table rows with optional continuation lines.
+    if (codeLike(current)) {
+      const valueParts: string[] = [];
+      let j = i + 1;
+      while (j < lines.length && !codeLike(lines[j])) {
+        valueParts.push(lines[j]);
+        j += 1;
+      }
+      rows.push({ item: current, value: valueParts.join(" ").trim() });
+      i = j;
+      continue;
+    }
+
+    // Case C: default key/value pair layout.
+    rows.push({ item: current, value: next ?? "" });
+    i += 2;
+  }
+
+  if (rows.length === 0) {
+    return null;
+  }
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full text-sm border-collapse">
+        <thead>
+          <tr className="bg-muted/50">
+            <th className="text-left px-3 py-2 font-medium text-foreground border border-border w-1/3">
+              Item
+            </th>
+            <th className="text-left px-3 py-2 font-medium text-foreground border border-border">
+              Value
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, i) => (
+            <tr key={`${row.item}-${i}`} className={i % 2 === 0 ? "" : "bg-muted/30"}>
+              <td className="px-3 py-2 text-foreground border border-border">{row.item}</td>
+              <td className="px-3 py-2 text-muted-foreground border border-border">{row.value}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+function TabContent({
+  content,
+  tabKey,
+}: {
+  content: string | null | undefined;
+  tabKey: TabKey;
+}) {
   if (!content) {
     return (
       <p className="text-muted-foreground text-sm italic">
@@ -149,6 +237,11 @@ function TabContent({ content }: { content: string | null | undefined }) {
         )}
       </div>
     );
+  }
+
+  if (tabKey === "component") {
+    const simpleTable = renderSimpleComponentsTable(content);
+    if (simpleTable) return simpleTable;
   }
 
   const paragraphs = content.split("\n").filter(Boolean);
@@ -214,7 +307,7 @@ export default function ProductDetail() {
     title: product ? `${product.name}` : "Product Details",
     description:
       product
-        ? `${product.name} ; ${product.shortDescription}`
+        ? `${product.name} - technical details, components, procedures and specifications.`
         : "INVIROGENS product details and specifications.",
   });
 
@@ -352,9 +445,25 @@ export default function ProductDetail() {
                 </p>
               )}
 
-              <p className="text-lg text-muted-foreground mb-6 leading-relaxed">
-                {product.shortDescription}
-              </p>
+              {product.storageInfo && (
+                <Card className="mb-6 bg-card/70">
+                  <CardContent className="p-4">
+                    <p className="text-xs uppercase tracking-wide text-muted-foreground mb-2">
+                      Storage & Shipping
+                    </p>
+                    <div className="space-y-1">
+                      {product.storageInfo
+                        .split("\n")
+                        .filter(Boolean)
+                        .map((line, index) => (
+                          <p key={index} className="text-sm text-foreground">
+                            {line}
+                          </p>
+                        ))}
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
 
               <div className="flex flex-wrap items-center gap-3">
                 <Link href="/contact">
@@ -409,7 +518,7 @@ export default function ProductDetail() {
           </div>
 
           <div className="min-h-[200px]" data-testid={`tab-content-${activeTab}`}>
-            <TabContent content={getTabContent(activeTab)} />
+            <TabContent content={getTabContent(activeTab)} tabKey={activeTab} />
           </div>
         </div>
       </section>
@@ -449,9 +558,6 @@ export default function ProductDetail() {
                               <h3 className="font-semibold text-foreground text-sm mb-1">
                                 {rp.name}
                               </h3>
-                              <p className="text-xs text-muted-foreground line-clamp-2">
-                                {rp.shortDescription}
-                              </p>
                             </div>
                           </div>
                         </div>

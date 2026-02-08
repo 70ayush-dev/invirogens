@@ -1,3 +1,45 @@
+import { seedSectionOverrides } from "./seed-section-overrides.ts";
+import { seedMetaOverrides } from "./seed-meta-overrides.ts";
+
+function extractStorageInfoFromProduct(product: {
+  description: string;
+  specifications: string;
+  procedure: string;
+  components: string;
+}): string | undefined {
+  const source = [
+    product.description,
+    product.specifications,
+    product.procedure,
+    product.components,
+  ]
+    .join("\n")
+    .split("\n")
+    .map((line) => line.replace(/\s+/g, " ").trim())
+    .filter(Boolean);
+
+  const storageLike = source.filter((line) => {
+    const text = line.toLowerCase();
+    const looksStorage =
+      text.includes("store") ||
+      text.includes("stored") ||
+      text.includes("storage") ||
+      text.includes("ships at") ||
+      text.includes("shelf life") ||
+      text.includes("valid for");
+    return looksStorage && line.length <= 180;
+  });
+
+  if (storageLike.length === 0) return undefined;
+
+  const unique: string[] = [];
+  for (const line of storageLike) {
+    if (!unique.includes(line)) unique.push(line);
+  }
+
+  return unique.slice(0, 2).join("\n");
+}
+
 export const seedProducts = [
   {
     name: "INVIROGENS EtBr Destroyer-BAG",
@@ -336,6 +378,30 @@ export const seedProducts = [
     featured: false,
   },
 ];
+
+for (const product of seedProducts) {
+  const override = seedSectionOverrides[product.slug];
+  if (!override) continue;
+  product.components = override.components;
+  product.procedure = override.procedure;
+  product.specifications = override.specifications;
+  product.troubleshooting = override.troubleshooting;
+}
+
+for (const product of seedProducts) {
+  const storageInfo = extractStorageInfoFromProduct(product);
+  if (storageInfo) {
+    (product as { storageInfo?: string }).storageInfo = storageInfo;
+  }
+}
+
+for (const product of seedProducts) {
+  const meta = seedMetaOverrides[product.slug];
+  if (!meta) continue;
+  if (meta.storageInfo) {
+    (product as { storageInfo?: string }).storageInfo = meta.storageInfo;
+  }
+}
 
 export const seedNews = [
   {

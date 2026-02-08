@@ -8,6 +8,7 @@ export const insertProductSchema = z.object({
   shortDescription: z.string().min(1),
   description: z.string().min(1),
   components: z.string().nullable().optional(),
+  storageInfo: z.string().nullable().optional(),
   procedure: z.string().nullable().optional(),
   specifications: z.string().nullable().optional(),
   troubleshooting: z.string().nullable().optional(),
@@ -41,6 +42,7 @@ export type Product = {
   shortDescription: string;
   description: string;
   components: string | null;
+  storageInfo: string | null;
   procedure: string | null;
   specifications: string | null;
   troubleshooting: string | null;
